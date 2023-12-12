@@ -17,17 +17,34 @@
  * @param {string} searchTerm - The word or term we're searching for. 
  * @param {JSON} scannedTextObj - A JSON object representing the scanned text.
  * @returns {JSON} - Search results.
- * */ 
- function findSearchTermInBooks(searchTerm, scannedTextObj) {
-    /** You will need to implement your search and 
-     * return the appropriate object here. */
+ * */
+function findSearchTermInBooks(searchTerm, scannedTextObj) {
 
-    var result = {
-        "SearchTerm": "",
-        "Results": []
+    /** initialize empty arraay */
+    const results = [];
+
+    /** Iterate through each book in the JSON data */
+    scannedTextObj.forEach(book => {
+        /* Iterate through the content of each book */
+        book.Content.forEach(content => {
+            /* Check if the search term is present in the text */
+            if (content.Text.includes(searchTerm)) {
+                /* If term is found, add relevant information to the results array */
+                results.push({
+                    ISBN: book.ISBN,
+                    Page: content.Page,
+                    Line: content.Line
+                });
+            }
+        });
+    });
+
+
+    return {
+        SearchTerm: searchTerm,
+        Results: results
     };
-    
-    return result; 
+
 }
 
 /** Example input object. */
@@ -50,11 +67,11 @@ const twentyLeaguesIn = [
                 "Page": 31,
                 "Line": 10,
                 "Text": "eyes were, I asked myself how he had managed to see, and"
-            } 
-        ] 
+            }
+        ]
     }
 ]
-    
+
 /** Example output object */
 const twentyLeaguesOut = {
     "SearchTerm": "the",
@@ -83,7 +100,9 @@ const twentyLeaguesOut = {
  * Please add your unit tests below.
  * */
 
-/** We can check that, given a known input, we get a known output. */
+/** We can check that, given a known input, we get a known output. 
+ * Positive case
+*/
 const test1result = findSearchTermInBooks("the", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("PASS: Test 1");
@@ -93,12 +112,57 @@ if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("Received:", test1result);
 }
 
-/** We could choose to check that we get the right number of results. */
-const test2result = findSearchTermInBooks("the", twentyLeaguesIn); 
+/** We could choose to check that we get the right number of results. 
+ * Positive case
+*/
+
+const test2result = findSearchTermInBooks("the", twentyLeaguesIn);
 if (test2result.Results.length == 1) {
     console.log("PASS: Test 2");
 } else {
     console.log("FAIL: Test 2");
     console.log("Expected:", twentyLeaguesOut.Results.length);
     console.log("Received:", test2result.Results.length);
+}
+
+/** Negative case - a term that is not present */
+
+const test3result = findSearchTermInBooks("never", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test3result)) {
+    console.log("PASS: Test 3");
+} else {
+    console.log("FAIL: Test 3");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test3result);
+}
+
+/** Negative case - case-sensitive */
+
+const test4result = findSearchTermInBooks("The", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test4result)) {
+    console.log("PASS: Test 4");
+} else {
+    console.log("FAIL: Test 4");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test4result);
+}
+
+/** Negative case - numbers and special characters */
+const test5result = findSearchTermInBooks("@12", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test5result)) {
+    console.log("PASS: Test 5");
+} else {
+    console.log("FAIL: Test 5");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test5result);
+}
+
+/** Empty search term */
+const test6result = findSearchTermInBooks("", twentyLeaguesIn);
+if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test6result)) {
+    console.log("PASS: Test 5");
+} else {
+    console.log("FAIL: Test 5");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test6result);
 }
